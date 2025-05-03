@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>J's Quality Custom Painting - Proudly Serving the North State</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://kit.fontawesome.com/c73bb36ef6.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="./CSS/index.css">
+    </head>
+    <body>
+        <header class="navbar">
+            <nav>
+                <ul class="nav-left">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Residential</a></li>
+                    <li><a href="#">Commercial</a></li>
+                </ul>
+                <div class="logo">
+                    <a href="index.html"><img src="./img/logo.png"></a>
+                </div>
+                <ul class="nav-right">
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">Our Work</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </nav>
+        </header>
+        <header class="sticky-navbar" id="stickyNavbar">
+            <nav>
+                <ul class="nav-left">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Residential</a></li>
+                    <li><a href="#">Commercial</a></li>
+                </ul>
+                <div class="logo">
+                    <a href="#"><img src="./img/logo.png" alt="Logo"></a>
+                </div>
+                <ul class="nav-right">
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">Our Work</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <div class="mobile-menu-icon" onclick="openMobileMenu()">
+            <i class="fa fa-bars"></i>
+        </div>
+        <div id="mobileMenu" class="mobile-menu-overlay">
+            <div class="mobile-menu-header">
+                <button class="close-btn" onclick="closeMobileMenu()">&times;</button>
+            </div>
+            <ul class="mobile-menu-links">
+                <li><a href="#about" onclick="closeMobileMenu()">About Us</a></li>
+                <li><a href="#about" onclick="closeMobileMenu()">Residential</a></li>
+                <li><a href="#about" onclick="closeMobileMenu()">Commercial</a></li>
+                <li><a href="#services" onclick="closeMobileMenu()">Services</a></li>
+                <li><a href="#cards-section" onclick="closeMobileMenu()">Our Work</a></li>
+                <li><a href="#steps-section" onclick="closeMobileMenu()">Get a Quote</a></li>
+            </ul>
+        </div>
+        
+        <section class="hero" id="hero">
+            <div class="hero-content">
+                <h1>Where <strong>Quality</strong> Meets <strong>Community</strong></h1>
+                <p>Professional painting services with a personal touch.</p>
+                <button class="scroll-btn" onclick="scrollToSection()">↓</button>
+            </div>
+        </section>
+
+        <section class="about" id="about">
+
+            <div class="about-content-top">
+                <div class="about-img-left" slide-right="true">
+                    <img src="./img/hero-img1.jpg" alt="">
+                </div>
+                <div class="about-text-right">
+                    <h2 class="about-title" data-rise="true">Trusted by Your Neighbors, <strong>Driven by Craftsmanship.</strong></h2>
+                    <div class="divider"></div>
+                    <p class="about-text1">We're more than just painters — we're neighbors, homeowners, and small business supporters, just like you. Rooted in the community we serve, our team brings a deep respect for your space and a relentless attention to detail to every project. Whether it’s a cozy living room or a high-traffic commercial exterior, we treat every surface like it’s our own, using premium materials and proven techniques that stand the test of time.</p>
+                    <p class="about-text2">What sets us apart isn’t just the quality of our finishes, but the relationships we build along the way. From the first handshake to the final walkthrough, we prioritize communication, transparency, and craftsmanship. Our mission is to elevate homes and businesses with color, care, and consistency — and to leave behind more than a fresh coat of paint: we leave behind pride in a job well done.</p>
+                </div>
+            </div>
+
+            <div class="about-content-bottom">
+                <div class="about-text-left">
+                    <h2 class="about-title-left" data-rise="true"><span>Proudly</span> Serving <strong>the North State</strong></h2>
+                    <div class="divider"></div>
+                    <p>
+                        At J's Quality Custom Painting, we believe in the power of a fresh coat of paint to transform not just walls, but entire spaces. We're a full-service painting company that has been transforming homes and businesses in the North State for over 15 years. Our expert team is skilled in both residential and commercial painting, ensuring that every project we undertake is completed to the highest standards of quality and craftsmanship.
+                    </p>
+                    <button class="about-button">Receive Your Quote</button>
+                </div>
+                <div class="about-img-right" slide-left="true">
+                    <img src="/img/map.png" alt="">
+                </div>
+            </div>
+        </section>
+
+        <section class="services" id="services">
+            <div class="services-container">
+                <div class="services-img" slide-right="true">
+                    <img src="/img/house-painter2.jpg" alt="">
+                </div>
+                <div class="services-content">
+                    <h2 class="services-title" data-rise="true">What we Offer</h2>
+                    <div class="divider2"></div>
+                    <ul data-rise="true">
+                        <li>
+                            <i class="fa fa-arrow-right"></i>
+                            <p>Residential Painting</p>
+                        </li>
+                        <li>
+                            <i class="fa fa-arrow-right"></i>
+                            <p>Commercial Painting</p>
+                        </li>
+                        <li>
+                            <i class="fa fa-arrow-right"></i>
+                            <p>Interior & Exterior Painting</p>
+                        </li>
+                        <li>
+                            <i class="fa fa-arrow-right"></i>
+                            <p>Exterior Wood Staining</p>
+                        </li>
+                        <li>
+                            <i class="fa fa-arrow-right"></i>
+                            <p>Interior & Exterior Repairs</p>
+                        </li>
+                        <li>
+                            <i class="fa fa-arrow-right"></i>
+                            <p>Color Matching & Selection</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="cards-section" id="cards-section">
+            <h2 data-rise="true">Our Work Speaks for Itself, <strong>And Our Clients Agree</strong></h2>
+            <div class="divider"></div>
+        
+            <div class="cards-grid">
+
+                <div class="card">
+                    <div class="card-image" style="background-image: url('/img/hero-img1.jpg');"></div>
+                    <div class="card-text">
+                        <h3>Linda K.</h3>
+                        <p>
+                            I received outstanding service from J's Quality Custom Painting. They did the painting on the exterior and interior of Kid & Me Preschool.They are very honest and trustworthy guys and did a wonderful job. I highly recommend them and will definately use then in the furture.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image" style="background-image: url('/img/hero-img1.jpg');"></div>
+                    <div class="card-text">
+                        <h3>Pat N.</h3>
+                        <p>
+                            I really liked them. This is the second time I have used them. I had used them to paint my uncle's house for me last year and I was impressed with them. They came recommended to me by one of my ceramic students, they had liked them and so I used them. They provide quality service. They were just nice guys.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image" style="background-image: url('/img/hero-img1.jpg');"></div>
+                    <div class="card-text">
+                        <h3>Review</h3>
+                        <p>Entrepreneurs deserve the flexibility to unlock their home equity, but often are turned down by
+                            banks. One of the perks of being self-employed is getting to write off business expenses – but that
+                            reduces reported income and can stand in the way of mortgage approvals...</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image" style="background-image: url('/img/hero-img1.jpg');"></div>
+                    <div class="card-text">
+                        <h3>Review</h3>
+                        <p>Entrepreneurs deserve the flexibility to unlock their home equity, but often are turned down by
+                            banks. One of the perks of being self-employed is getting to write off business expenses – but that
+                            reduces reported income and can stand in the way of mortgage approvals...</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image" style="background-image: url('/img/hero-img1.jpg');"></div>
+                    <div class="card-text">
+                        <h3>Review</h3>
+                        <p>Entrepreneurs deserve the flexibility to unlock their home equity, but often are turned down by
+                            banks. One of the perks of being self-employed is getting to write off business expenses – but that
+                            reduces reported income and can stand in the way of mortgage approvals...</p>
+                    </div>
+                </div>
+        
+                <!-- Repeat .card blocks for other cards... -->
+            </div>
+        </section>
+
+        <section class="steps-section" id="steps-section">
+            <div class="steps-image" slide-right="true"></div>
+        
+            <div class="steps-content">
+                <div class="steps-header">
+                    <h2 data-rise="true">Receive Your Free Quote in <strong>4 Simple Steps</strong></h2>
+                    <div class="divider"></div>
+                </div>
+        
+                <ol class="steps-list">
+                    <li>
+                        <div class="step-number">1</div>
+                        <p>Complete our <strong>Bid Request</strong> Form below, letting us know your property's square footage, preferred color palettes, and your ideal timeframe.</p>
+                    </li>
+                    <li>
+                        <div class="step-number">2</div>
+                        <p>Expect a response within 72 business hours to discuss your project in more detail and outline the next steps.</p>
+                    </li>
+                    <li>
+                        <div class="step-number">3</div>
+                        <p>We’ll visit your property to evaluate surfaces, confirm measurements, and ensure we understand your vision — so we can provide the most accurate and transparent quote possible.</p>
+                    </li>
+                    <li>
+                        <div class="step-number">4</div>
+                        <p>Once you approve the quote, we’ll work with you to schedule the painting at a time that’s convenient for you — and keep you informed every step of the way.</p>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="quote-request-section">
+            <div class="quote-request-container">
+                <!-- LEFT: FORM -->
+                <div class="quote-form">
+                    <form>
+                        <h1 data-rise="true">Request a <strong>Free Painting Quote</strong></h1>
+                        <h2>Let’s bring your vision to life. Tell us about your project:</h2>
+                        <div class="divider"></div>
+        
+                        <!-- GROUPED TOP FOUR FIELDS -->
+                        <div class="form-row" id="top-row">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                        </div>
+        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Project Address</label>
+                                <input type="text" id="address" name="address" required>
+                            </div>
+                        </div>
+        
+                        <!-- REMAINING FORM SAME AS BEFORE -->
+                        <label>Project Type</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="interior" name="projectType" value="Interior">
+                            <label for="interior">Interior</label>
+                            <input type="checkbox" id="exterior" name="projectType" value="Exterior">
+                            <label for="exterior">Exterior</label>
+                            <input type="checkbox" id="both" name="projectType" value="Both">
+                            <label for="both">Both</label>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="squareFootage">Square Footage</label>
+                                <input type="number" id="squareFootage" name="squareFootage">
+                            </div>
+                            <div class="form-group">
+                                <label for="timeline">Desired Finish Date</label>
+                                <input type="date" id="timeline" name="timeline">
+                            </div>
+                        </div>
+        
+                        <label for="paintingAreas">Rooms/Areas to be Painted</label>
+                        <textarea id="paintingAreas" name="paintingAreas"></textarea>
+        
+                        <label for="surfaceCondition">Current Surface Condition</label>
+                        <select id="surfaceCondition" name="surfaceCondition">
+                            <option value="" disabled selected>Select an Option</option>
+                            <option value="excellent">Excellent</option>
+                            <option value="good">Good</option>
+                            <option value="fair">Fair</option>
+                            <option value="poor">Poor</option>
+                        </select>
+        
+                        <label for="preferredColors">Preferred Colors / Themes</label>
+                        <textarea id="preferredColors" name="preferredColors"></textarea>
+        
+                        <label for="notes">Additional Notes</label>
+                        <textarea id="notes" name="notes"></textarea>
+        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="agree" name="agree">
+                            <label for="agree">I agree to be contacted</label>
+                        </div>
+        
+                        <button type="submit">Request Your Quote</button>
+                    </form>
+                </div>
+        
+                <!-- RIGHT: LOGO / IMAGE -->
+                <div class="quote-logo" slide-left="true">
+                    <h2>Northern California’s <strong>Trusted Neighborhood Painters</strong></h2>
+                    <img src="./img/logo.png" alt="Company Logo">
+                </div>
+            </div>
+        </section>
+
+
+        
+        <script src="./JS/index.js" async defer></script>
+    </body>
+</html>
