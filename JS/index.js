@@ -51,6 +51,13 @@ riseElements.forEach((el) => {
     if (!el.closest(".hero-content")) riseObserver.observe(el);
 });
 
+window.addEventListener('DOMContentLoaded', () => {
+    const heroTitle = document.getElementById('hero-title');
+    if (heroTitle) {
+        heroTitle.classList.add('visible');
+    }
+});
+
 
 // Slide Animations
 const slideElements = document.querySelectorAll('[slide-right="true"], [slide-left="true"]');

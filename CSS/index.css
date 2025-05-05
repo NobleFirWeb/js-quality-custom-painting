@@ -1143,6 +1143,11 @@ nav a:hover {
     .hero-content h1, .hero-content p {
         margin: 0 10px;
     }
+    .card-text {
+        bottom: 85px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
     .steps-section {
         padding-top: 0;
         flex-direction: column;
@@ -1305,6 +1310,9 @@ nav a:hover {
     }
     .card {
         margin: 0 5%;
+    }
+    .card-text {
+        bottom: 35px;
     }
     .steps-section {
         padding-top: 0;
