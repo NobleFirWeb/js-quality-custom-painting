@@ -265,7 +265,8 @@ button { cursor: pointer; border: none; background: none; }
     margin-bottom: 28px;
 }
 .h-line { display: block; }
-.h-line--1 { opacity: 0.85; }
+.h-line--1 {  
+display: inline-flex; align-items: center; gap: 12px; }
 .h-line--2 {align-self: flex-end;}
 
 .hero-body {
