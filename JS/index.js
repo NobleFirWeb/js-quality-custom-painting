@@ -464,13 +464,24 @@
         // no easing or dwell on any individual face. It only ever holds still
         // at the literal start (first image) and end (last image), where
         // scroll progress itself is pinned at 0 or 1; in between it free-spins.
-        const TOTAL_TURN = (STEP_COUNT - 1) * -90; // front→right→back→left
+        //
+        // The pin runs past the last step by a 0.5-viewport buffer (a quiet
+        // beat after step 4 completes) plus one dwell viewport: during that
+        // dwell the testimonials panel (see below) slides in from the right
+        // over this still-pinned section, and the cube keeps turning another
+        // 90° so it's visibly spinning as it disappears behind the panel.
+        // The reviews pull-in is tied to the LAST viewport of this pin, so
+        // growing the pin by the buffer automatically delays it.
+        const P_END_BUF  = 0.5;                                          // viewports of quiet after step 4
+        const STEP_TURN  = (STEP_COUNT - 1) * -90;                       // front→right→back→left
+        const PIN_LEN    = (STEP_COUNT + P_END_BUF + 1) * PVH;           // steps + buffer + dwell
+        const STEP_FRAC  = STEP_COUNT / (STEP_COUNT + P_END_BUF + 1);    // steps end at this progress
         let currentStep  = -1;
 
         ScrollTrigger.create({
             trigger: processSection,
             start: 'top top',
-            end: `+=${STEP_COUNT * PVH}`,
+            end: `+=${PIN_LEN}`,
             pin: true,
             pinSpacing: true,
             scrub: 0.8,
@@ -483,11 +494,16 @@
                 hideProcStep();
             },
             onUpdate(self) {
-                if (procKsLine) procKsLine.style.width = Math.round(self.progress * procMaxKs()) + 'px';
-                gsap.set(procCube, { rotateY: TOTAL_TURN * self.progress });
+                const stepPhase  = Math.min(self.progress / STEP_FRAC, 1);
+                const dwellPhase = Math.max(0, (self.progress - STEP_FRAC) / (1 - STEP_FRAC));
+
+                if (procKsLine) procKsLine.style.width = Math.round(stepPhase * procMaxKs()) + 'px';
+                // Faces stay aligned to steps during the step phase, then the
+                // cube keeps rotating the same direction through the dwell.
+                gsap.set(procCube, { rotateY: STEP_TURN * stepPhase - 90 * dwellPhase });
 
                 // Switch step text at the midpoint between each pair of faces
-                const stepIdx = Math.min(STEP_COUNT - 1, Math.round(self.progress * (STEP_COUNT - 1)));
+                const stepIdx = Math.min(STEP_COUNT - 1, Math.round(stepPhase * (STEP_COUNT - 1)));
                 if (stepIdx !== currentStep) {
                     currentStep = stepIdx;
                     showProcStep(stepIdx);
@@ -502,65 +518,111 @@
 
 
     /* ──────────────────────────────────────────────────────────
-       TESTIMONIALS — horizontal slide in from right
-       Triggered when the user scrolls into the .t-outer area.
-       After sliding in, review bodies fade up one by one.
+       TESTIMONIALS — scroll-driven horizontal panel
+       .t-outer overlaps the process pin's dwell viewport (margin-top
+       -200vh in CSS) so the panel is pulled in from the right OVER the
+       still-pinned process section. Once fully in, the section stays
+       sticky while the review list translates up (scroll-through), then
+       dwells one extra viewport while the CTA panel pulls in over it.
     ────────────────────────────────────────────────────────── */
+    const tOuter       = document.getElementById('tOuter');
     const testimonials = document.querySelector('.testimonials');
-    const tBodies      = document.querySelectorAll('.t-body');
-    let tRevealDone    = false;
+    const tRight       = document.querySelector('.t-right');
+    const tList        = document.querySelector('.t-list');
 
-    if (testimonials) {
-        const tObs = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    testimonials.classList.add('slid-in');
-                    tObs.unobserve(testimonials);
-                    // Reveal review bodies after slide completes
-                    setTimeout(() => {
-                        tBodies.forEach((body, i) => {
-                            setTimeout(() => body.classList.add('revealed'), i * 120);
-                        });
-                        tRevealDone = true;
-                    }, 950);
-                }
-            });
-        }, { threshold: 0.15 });
-        tObs.observe(testimonials);
+    if (tOuter && testimonials && tRight && tList) {
+        const TVH        = window.innerHeight;
+        const T_BUF      = 0.75 * TVH; // breathing room once fully in view, before the list starts moving
+        const T_END_BUF  = 0.5 * TVH;  // quiet beat after the list finishes, before the CTA pulls in
+        const listScroll = Math.max(0, tRight.scrollHeight - tRight.clientHeight);
+        // slide + buffer + list + end-buffer + CTA dwell — the CTA pull-in is
+        // tied to the LAST viewport of this wrap, so the end-buffer delays it.
+        const T_BUDGET   = TVH + T_BUF + listScroll + T_END_BUF + TVH;
+
+        // Review bodies start hidden (see CSS) and rise in all at once,
+        // late in the buffer — just before the list becomes scrollable.
+        const tBodies      = gsap.utils.toArray('.t-body');
+        const REVEAL_AT    = TVH + 0.55 * T_BUF;
+        let   tRevealShown = false;
+        let   tRevealTL    = null;
+
+        function setTReveal(show) {
+            if (show === tRevealShown) return;
+            tRevealShown = show;
+            if (tRevealTL) tRevealTL.kill();
+            tRevealTL = gsap.timeline();
+            if (show) {
+                tRevealTL.to(tBodies, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' });
+            } else {
+                tRevealTL.to(tBodies, { opacity: 0, y: 40, duration: 0.35, ease: 'power2.in' });
+            }
+        }
+
+        // 100vh sticky base + scroll budget
+        tOuter.style.height = (TVH + T_BUDGET) + 'px';
+        gsap.set(testimonials, { x: '100vw' });
+        gsap.set(tBodies, { opacity: 0, y: 40 });
+
+        ScrollTrigger.create({
+            trigger: tOuter,
+            start: 'top top',
+            end: `+=${T_BUDGET - TVH}`,
+            scrub: 0.6,
+            onUpdate(self) {
+                const raw   = self.progress * (T_BUDGET - TVH);
+                const slide = Math.min(raw / TVH, 1);
+                gsap.set(testimonials, { x: ((1 - slide) * 100) + 'vw' });
+
+                setTReveal(raw >= REVEAL_AT);
+
+                const y = Math.min(Math.max(raw - TVH - T_BUF, 0), listScroll);
+                gsap.set(tList, { y: -y });
+            }
+        });
     }
 
 
     /* ──────────────────────────────────────────────────────────
-       CTA — horizontal slide in from right
-       Triggered when user scrolls near the bottom of t-list.
+       CTA — scroll-driven horizontal panel + dark-green wipe
+       .cta-outer overlaps the testimonials dwell viewport (margin-top
+       -200vh in CSS) so the CTA is pulled in from the right over the
+       pinned reviews, background still black. Only once it's 100% in
+       view does the dark-green overlay wipe in from the left; the
+       "Request a quote" link flips to white the moment the wipe's
+       leading edge passes it.
     ────────────────────────────────────────────────────────── */
+    const ctaOuter   = document.getElementById('ctaOuter');
     const ctaSection = document.querySelector('.cta-section');
     const ctaOverlay = document.getElementById('ctaOverlay');
+    const ctaLink    = document.querySelector('.cta-link');
 
-    if (ctaSection) {
-        const ctaObs = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    ctaSection.classList.add('slid-in');
-                    ctaObs.unobserve(ctaSection);
-                    // After slide completes, trigger green wipe on next scroll
-                    setTimeout(initGreenWipe, 950);
-                }
-            });
-        }, { threshold: 0.15 });
-        ctaObs.observe(ctaSection);
-    }
+    if (ctaOuter && ctaSection && ctaOverlay) {
+        const CVH      = window.innerHeight;
+        const C_BUF    = 0.75 * CVH; // breathing room once fully in view, before the green wipe starts
+        const C_BUDGET = CVH + C_BUF + CVH; // slide + buffer + wipe
 
-    function initGreenWipe() {
-        if (!ctaOverlay || !ctaSection) return;
+        // 100vh sticky base + scroll budget
+        ctaOuter.style.height = (CVH + C_BUDGET) + 'px';
+        gsap.set(ctaSection, { x: '100vw' });
+        gsap.set(ctaOverlay, { scaleX: 0 });
+
         ScrollTrigger.create({
-            trigger: ctaSection,
-            start: 'center 60%',
-            end: 'bottom top',
-            scrub: 1,
+            trigger: ctaOuter,
+            start: 'top top',
+            end: `+=${C_BUDGET}`,
+            scrub: 0.6,
             onUpdate(self) {
-                // scaleX 0 → 1 from left: full width cover
-                gsap.set(ctaOverlay, { scaleX: Math.min(self.progress * 2, 1) });
+                const raw   = self.progress * C_BUDGET;
+                const slide = Math.min(raw / CVH, 1);
+                gsap.set(ctaSection, { x: ((1 - slide) * 100) + 'vw' });
+
+                const wipe = Math.min(Math.max((raw - CVH - C_BUF) / CVH, 0), 1);
+                gsap.set(ctaOverlay, { scaleX: wipe });
+
+                if (ctaLink) {
+                    const covered = wipe * window.innerWidth > ctaLink.getBoundingClientRect().left;
+                    ctaLink.classList.toggle('cta-link--white', covered);
+                }
             }
         });
     }
@@ -575,7 +637,7 @@
         ScrollTrigger.create({
             trigger: footerWrap,
             start: 'top 85%',
-            end: 'top 20%',
+            end: 'top 30%',
             scrub: 1,
             onUpdate(self) {
                 const pct = gsap.utils.interpolate(10, 0, self.progress);
@@ -598,7 +660,7 @@
             const btn = quoteForm.querySelector('.f-submit');
             if (btn) {
                 btn.textContent = "Request Sent — We'll Be in Touch!";
-                btn.style.background = 'var(--dark-green)';
+                btn.style.background = 'var(--black)';
                 btn.style.color = 'var(--lace)';
                 btn.disabled = true;
             }

@@ -88,7 +88,7 @@ button { cursor: pointer; border: none; background: none; }
 .nav-menu-btn {
     pointer-events: all;
     font-family: var(--font-head);
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.14em;
     color: var(--lace);
@@ -97,14 +97,13 @@ button { cursor: pointer; border: none; background: none; }
     gap: 6px;
     transition: color 0.2s;
 }
-.nav-menu-btn:hover { color: var(--green); }
 
 .nav-plus {
     display: inline-block;
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     transition: transform 0.3s;
 }
-.nav-menu-btn:hover .nav-plus { transform: rotate(45deg); }
+
 
 
 /* ============================================================
@@ -114,9 +113,12 @@ button { cursor: pointer; border: none; background: none; }
     position: fixed;
     inset: 0;
     z-index: 2000;
-    background: var(--dark-green);
+    background: rgba(10,10,10,0.5);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     justify-content: center;
     padding: 60px;
     transform: translateY(-100%);
@@ -138,6 +140,8 @@ button { cursor: pointer; border: none; background: none; }
 .overlay-nav {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
     gap: 8px;
 }
 
@@ -160,17 +164,28 @@ button { cursor: pointer; border: none; background: none; }
     margin-right: 14px;
     opacity: 0.7;
 }
-.overlay-link:hover { opacity: 1; color: var(--green); }
+.overlay-link:hover { opacity: 1; color: var(--lace); }
 
 .overlay-footer-info {
     position: absolute;
-    bottom: 48px; left: 60px;
+    bottom: 48px; right: 60px;
     font-family: var(--font-body);
     font-size: 0.78rem;
     color: var(--lace);
     opacity: 0.45;
     display: flex;
     gap: 40px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.overlay-copyright {
+    position: absolute;
+    bottom: 48px; left: 60px;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--lace);
+    opacity: 0.45;
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
@@ -207,7 +222,6 @@ button { cursor: pointer; border: none; background: none; }
     overflow: hidden;
     display: flex;
     align-items: center;
-    pointer-events: none;
     z-index: -1;
 }
 .hero-marquee-track {
@@ -219,6 +233,11 @@ button { cursor: pointer; border: none; background: none; }
     animation: marqueeScroll 22s linear infinite;
     letter-spacing: -0.02em;
 }
+
+.hero-marquee-track:hover {
+    color: rgba(254,249,243,0.55);
+}
+
 @keyframes marqueeScroll {
     from { transform: translateX(0); }
     to   { transform: translateX(-50%); }
@@ -635,7 +654,14 @@ display: inline-flex; align-items: center; gap: 12px; }
     align-items: center;
     gap: 10px;
     backdrop-filter: blur(6px);
+    cursor: pointer;
 }
+
+.proj-tag-arrow svg {
+    display: block;
+    transition: transform 0.35s ease;
+}
+.proj-tag:hover .proj-tag-arrow svg { transform: rotate(45deg); }
 
 /* Keep scrolling — growing line pushes text rightward */
 .proj-keep-scrolling {
@@ -902,25 +928,30 @@ display: inline-flex; align-items: center; gap: 12px; }
 /* ============================================================
    TESTIMONIALS
 ============================================================ */
+/* Sticky-wrap: height set by JS (slide-in + list scroll + CTA dwell).
+   margin-top -200vh overlaps the process pin's dwell viewport so the
+   panel is pulled in over the still-pinned process section; z-index 9
+   paints it above proc-entry-wrap (8) so the cube disappears behind it. */
 .t-outer {
-    overflow: hidden;
     position: relative;
+    margin-top: -200vh;
+    z-index: 9;
 }
 
 .testimonials {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    min-height: 100vh;
-    transform: translateX(100vw);
-    transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1);
-    will-change: transform;
-}
-.testimonials.slid-in { transform: translateX(0); }
-
-/* LEFT — sticky B&W photo */
-.t-left {
     position: sticky;
     top: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    transform: translateX(100vw);
+    will-change: transform;
+}
+.testimonials.slid-in { transform: translateX(0); } /* no-GSAP fallback */
+
+/* LEFT — pinned B&W photo (section itself is sticky, so it just fills) */
+.t-left {
     height: 100vh;
     overflow: hidden;
 }
@@ -935,27 +966,60 @@ display: inline-flex; align-items: center; gap: 12px; }
 .t-right {
     background: var(--lace);
     color: var(--black);
-    padding: 60px 48px;
+    /* No top padding — the marquee band carries it instead, so its opaque
+       background reaches the very top edge and reviews can't peek above it */
+    padding: 0 48px 60px;
     display: flex;
     flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
 }
 
+/* Opaque band above the list so reviews slide up underneath it.
+   flex-shrink 0 on both this and .t-list — otherwise the flex column
+   compresses them to fit 100vh and the list never registers overflow,
+   which zeroes out the scroll-through distance. */
 .t-marquee-wrap {
     overflow: hidden;
-    margin-bottom: 48px;
+    /* Top padding lives here (not on .t-right) so this band's opaque lace
+       background covers the full strip above the list; padding-bottom
+       replaces the old margin-bottom so the title-to-list gap is ALSO
+       opaque band instead of a transparent gap reviews scroll through. */
+    padding-top: 60px;
+    padding-bottom: 120px;
+    position: relative;
+    z-index: 2;
+    background: var(--lace);
+    flex-shrink: 0;
+    cursor:default;
+    /* Flex, like the other marquee wraps — the track then sizes to its
+       CONTENT width (not the container), so translateX(-50%) travels half
+       the full text run seamlessly instead of half a container-width,
+       which read as a slow crawl with a visible reset jump. */
+    display: flex;
 }
 .t-marquee-track {
     font-family: var(--font-head);
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    color: rgba(10,10,10,0.3);
+    /* Sized to roughly match one full review row */
+    font-size: clamp(4rem, 20vh, 11rem);
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--black);
     white-space: nowrap;
     animation: marqueeScroll 20s linear infinite;
     text-transform: uppercase;
+    transition: color 0.2s ease;
 }
 
-.t-list { display: flex; flex-direction: column; }
+.t-marquee-track:hover {
+    color: rgba(10,10,10,0.12);
+}
+
+.t-list {
+    display: flex;
+    flex-direction: column;
+}
 
 .t-review { padding: 32px 0; }
 
@@ -968,37 +1032,37 @@ display: inline-flex; align-items: center; gap: 12px; }
 .t-score-group {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
     font-family: var(--font-head);
-    font-size: 0.72rem;
-    font-weight: 600;
+    font-size: 1.15rem;
+    font-weight: 700;
     letter-spacing: 0.1em;
     color: var(--black);
 }
 .t-sq {
-    font-size: 0.4rem;
-    color: var(--green);
+    font-size: 1.25rem;
+    color: var(--dark-green);
 }
 .t-name {
     font-family: var(--font-head);
-    font-size: 0.65rem;
+    font-size: 1rem;
     font-weight: 600;
     letter-spacing: 0.12em;
-    color: rgba(10,10,10,0.45);
+    color: var(--dark-green);
 }
 
 .t-body {
     font-family: var(--font-body);
-    font-size: 0.9rem;
-    line-height: 1.7;
+    font-size: 1.15rem;
+    line-height: 1.75;
     color: rgba(10,10,10,0.7);
+    /* Hidden until the scroll-buffer reveal fires (JS); .revealed = no-GSAP fallback */
     opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: translateY(40px);
 }
 .t-body.revealed {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
 }
 
 .t-rule {
@@ -1007,43 +1071,47 @@ display: inline-flex; align-items: center; gap: 12px; }
     margin-top: 32px;
 }
 
-/* 50vh bottom space so CTA trigger fires correctly */
-.t-list::after {
-    content: '';
-    display: block;
-    height: 50vh;
+.t-list {
+    position: relative;
+    z-index: 1;
+    will-change: transform;
+    flex-shrink: 0;
 }
 
 
 /* ============================================================
    CTA / GET IN TOUCH
 ============================================================ */
+/* Sticky-wrap: height set by JS (slide-in + wipe). margin-top -200vh
+   overlaps the testimonials dwell viewport so the CTA is pulled in over
+   the pinned reviews; z-index 10 paints it above t-outer (9). */
 .cta-outer {
-    overflow: hidden;
     position: relative;
+    margin-top: -200vh;
+    z-index: 10;
 }
 
 .cta-section {
-    position: relative;
+    position: sticky;
+    top: 0;
     background: var(--black);
     color: var(--lace);
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 80px 48px;
     overflow: hidden;
     transform: translateX(100vw);
-    transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1);
     will-change: transform;
 }
-.cta-section.slid-in { transform: translateX(0); }
+.cta-section.slid-in { transform: translateX(0); } /* no-GSAP fallback */
 
-/* Green wipe overlay — full viewport width, left → right */
+/* Dark-green wipe overlay — slides in from the left once CTA is fully in view */
 .cta-green-overlay {
     position: absolute;
     inset: 0;
-    background: var(--green);
+    background: var(--dark-green);
     transform-origin: left center;
     transform: scaleX(0);
     z-index: 5;
@@ -1053,26 +1121,28 @@ display: inline-flex; align-items: center; gap: 12px; }
 .cta-content {
     position: relative;
     z-index: 10;
-    max-width: 900px;
+    margin: 0 auto;
+    max-width: 90%;
+
 }
 
 .cta-label {
     display: block;
-    color: rgba(254,249,243,0.4);
+    color: var(--lace);
     margin-bottom: 40px;
 }
 
 .cta-top {
     display: grid;
-    grid-template-columns: 180px 1fr;
+    grid-template-columns: 260px 1fr;
     gap: 40px;
     align-items: end;
     margin-bottom: 48px;
 }
 
 .cta-photo {
-    width: 180px;
-    height: 220px;
+    width: 260px;
+    height: 320px;
     overflow: hidden;
     flex-shrink: 0;
 }
@@ -1098,7 +1168,7 @@ display: inline-flex; align-items: center; gap: 12px; }
     font-family: var(--font-body);
     font-size: 0.92rem;
     line-height: 1.7;
-    color: rgba(254,249,243,0.5);
+    color: var(--lace);
     max-width: 440px;
 }
 .cta-link {
@@ -1108,16 +1178,21 @@ display: inline-flex; align-items: center; gap: 12px; }
     font-weight: 600;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--green);
-    border: 1px solid rgba(58,174,155,0.4);
+    color: var(--lace);
+    border: 1px solid rgba(254,249,243,0.5);
     padding: 14px 24px;
     white-space: nowrap;
     transition: background 0.25s, color 0.25s, border-color 0.25s;
 }
+/* Flips on as the dark-green wipe's leading edge passes the link (JS) */
+.cta-link--white {
+    color: var(--lace);
+    border-color: rgba(254,249,243,0.5);
+}
 .cta-link:hover {
-    background: var(--green);
+    background: var(--lace);
     color: var(--dark-green);
-    border-color: var(--green);
+    border-color: var(--lace);
 }
 
 
@@ -1125,9 +1200,9 @@ display: inline-flex; align-items: center; gap: 12px; }
    QUOTE FORM
 ============================================================ */
 .quote-section {
-    background: var(--black);
+    background: var(--dark-green);
     color: var(--lace);
-    padding: 100px 48px;
+    padding: 100px 48px 160px 48px;
     border-top: 1px solid rgba(254,249,243,0.08);
 }
 
@@ -1135,7 +1210,7 @@ display: inline-flex; align-items: center; gap: 12px; }
     display: grid;
     grid-template-columns: 380px 1fr;
     gap: 80px;
-    max-width: 1200px;
+    max-width: 85%;
     margin: 0 auto;
 }
 
@@ -1145,7 +1220,7 @@ display: inline-flex; align-items: center; gap: 12px; }
     gap: 24px;
     padding-top: 8px;
 }
-.quote-left .bracket-label { color: var(--green); }
+.quote-left .bracket-label { color: var(--lace); }
 .quote-left h2 {
     font-family: var(--font-head);
     font-size: clamp(1.6rem, 2.5vw, 2.4rem);
@@ -1155,12 +1230,12 @@ display: inline-flex; align-items: center; gap: 12px; }
 }
 .quote-left h2 em {
     font-style: normal;
-    color: var(--green);
+    color: var(--lace);
 }
 .quote-rule {
     width: 40px;
     height: 2px;
-    background: var(--green);
+    background: var(--lace);
     opacity: 0.5;
 }
 .quote-left p {
@@ -1170,7 +1245,7 @@ display: inline-flex; align-items: center; gap: 12px; }
     color: rgba(254,249,243,0.45);
 }
 .quote-logo {
-    width: 120px;
+    width: 300px;
     height: auto;
     object-fit: contain;
     filter: brightness(0) invert(1);
@@ -1191,7 +1266,7 @@ display: inline-flex; align-items: center; gap: 12px; }
     color: var(--lace);
     margin-bottom: 4px;
 }
-.quote-form h3 strong { color: var(--green); font-weight: 700; }
+.quote-form h3 strong { color: var(--lace); font-weight: 700; }
 .form-intro {
     font-family: var(--font-body);
     font-size: 0.82rem;
@@ -1277,7 +1352,7 @@ display: inline-flex; align-items: center; gap: 12px; }
 }
 
 .f-submit {
-    background: var(--green);
+    background: var(--lace);
     color: var(--dark-green);
     font-family: var(--font-head);
     font-size: 0.78rem;
@@ -1291,16 +1366,18 @@ display: inline-flex; align-items: center; gap: 12px; }
     width: 100%;
     margin-top: 8px;
 }
-.f-submit:hover { background: var(--dark-green); color: var(--lace); }
+.f-submit:hover { background: var(--black); color: var(--lace); }
 .f-submit:disabled { opacity: 0.7; cursor: not-allowed; }
 
 
 /* ============================================================
    FOOTER
 ============================================================ */
+/* Dark green surrounds the black footer block during the scale effect */
 .footer-scale-wrap {
     padding: 0 5%;
     transition: padding 0.05s linear;
+    background: var(--dark-green);
 }
 
 .footer {
@@ -1309,7 +1386,7 @@ display: inline-flex; align-items: center; gap: 12px; }
     color: var(--lace);
     border: 1px solid rgba(254,249,243,0.08);
     overflow: hidden;
-    height: 75vh;
+    height: 70vh;
 }
 
 .footer-inner {
@@ -1436,7 +1513,6 @@ display: inline-flex; align-items: center; gap: 12px; }
 @media (max-width: 1024px) {
     .hero { grid-template-columns: 1fr 220px; }
     .about-body-row { grid-template-columns: 1fr; gap: 40px; }
-    .about-cta-card { max-width: 340px; }
     .svc-grid {
         grid-template-columns: repeat(2, 1fr);
         grid-template-rows: repeat(3, 280px);
