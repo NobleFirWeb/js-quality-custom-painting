@@ -1021,7 +1021,7 @@ display: inline-flex; align-items: center; gap: 12px; }
     flex-direction: column;
 }
 
-.t-review { padding: 32px 0; }
+.t-review { padding: 38px 0; }
 
 .t-meta-row {
     display: flex;
@@ -1059,6 +1059,7 @@ display: inline-flex; align-items: center; gap: 12px; }
     /* Hidden until the scroll-buffer reveal fires (JS); .revealed = no-GSAP fallback */
     opacity: 0;
     transform: translateY(40px);
+    padding: 15px 0;
 }
 .t-body.revealed {
     opacity: 1;
