@@ -50,6 +50,36 @@
 
 
     /* ============================================================
+       NAV COLOUR — flip text to the black theme colour ONLY when a light
+       section (services / reviews) is the section actually painted under the
+       nav. We use elementFromPoint (hit-tests the TOP-most element) rather
+       than rect overlap, because .services is position:sticky and its rect
+       keeps "covering" the nav band even after the dark process section has
+       risen on top of it — which was leaving black text on a dark bg.
+       CSS transitions the colour, so the swap fades smoothly.
+    ============================================================ */
+    const mainNav = document.getElementById('mainNav');
+
+    function updateNavColour() {
+        if (!mainNav) return;
+        // Sample the nav band at horizontal centre — clear of the nav's own
+        // logo/menu children (which sit at the edges). The .nav container is
+        // pointer-events:none, so the hit-test passes through to the page.
+        const el = document.elementFromPoint(Math.round(window.innerWidth / 2), 14);
+        const overLight = !!(el && el.closest && el.closest('.services, .testimonials'));
+        mainNav.classList.toggle('nav--dark', overLight);
+    }
+
+    if (lenis) {
+        lenis.on('scroll', updateNavColour);
+    } else {
+        window.addEventListener('scroll', updateNavColour, { passive: true });
+    }
+    window.addEventListener('resize', updateNavColour);
+    updateNavColour();
+
+
+    /* ============================================================
        GSAP ANIMATIONS (only when GSAP is available)
     ============================================================ */
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {

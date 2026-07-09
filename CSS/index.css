@@ -64,11 +64,11 @@ button { cursor: pointer; border: none; background: none; }
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 1000;
+    height: 76px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 32px;
-    height: 70px;
+    padding: 0 40px;
     pointer-events: none;
 }
 
@@ -76,13 +76,34 @@ button { cursor: pointer; border: none; background: none; }
     pointer-events: all;
     display: flex;
     align-items: center;
-    opacity: 0;
+    gap: 10px;
 }
-.nav-logo img {
-    width: auto;
-    height: 38px;
+/* The logo PNG is a 2000×2000 file whose visible roller mark is only the
+   centre ~25% (≈37.5% transparent padding per side). This fixed box clips
+   that padding while the oversized img inside scales the mark up to fill it,
+   so the mark reads at a proper size and sits tight against the wordmark. */
+.nav-logo-mark {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.nav-logo-mark img {
+    width: 184px;
+    height: 184px;
+    max-width: none;
     object-fit: contain;
-    filter: brightness(0) invert(1);
+}
+.nav-logo-text {
+    font-family: var(--font-head);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--lace);
+    white-space: nowrap;
 }
 
 .nav-menu-btn {
@@ -102,6 +123,19 @@ button { cursor: pointer; border: none; background: none; }
     display: inline-block;
     font-size: 1.25rem;
     transition: transform 0.3s;
+}
+
+/* Nav text is white by default (over dark sections). JS adds .nav--dark when
+   a light section (services / reviews) scrolls under the nav, flipping the
+   text to the black theme colour. Only the text — the logo mark is untouched. */
+.nav .nav-logo-text,
+.nav-menu-btn {
+    color: var(--lace);
+    transition: color 0.3s ease;
+}
+.nav--dark .nav-logo-text,
+.nav--dark .nav-menu-btn {
+    color: var(--black);
 }
 
 
@@ -126,10 +160,18 @@ button { cursor: pointer; border: none; background: none; }
 }
 .overlay-menu.open { transform: translateY(0); }
 
+/* Overlay logo + close mirror the nav exactly: same 40px inset and 76px
+   height so they sit right where .nav-logo and the MENU+ button are. */
+.overlay-logo {
+    position: absolute;
+    top: 0; left: 40px;
+    height: 76px;
+}
+
 .overlay-close {
     position: absolute;
-    top: 0; right: 32px;
-    height: 70px;
+    top: 0; right: 40px;
+    height: 76px;
     font-family: var(--font-head);
     font-size: 0.85rem;
     font-weight: 600;
@@ -586,7 +628,7 @@ display: inline-flex; align-items: center; gap: 12px; }
 .proj-marquee {
     width: 100%;
     position: absolute;
-    top: 20px; left: 0; right: 0;
+    top: 28px; left: 0; right: 0;
     z-index: 20;
     overflow: hidden;
     padding: 14px 0;
@@ -732,7 +774,7 @@ display: inline-flex; align-items: center; gap: 12px; }
     height: 100vh;
     background: var(--lace);
     color: var(--black);
-    padding: 60px 48px 48px;
+    padding: 80px 60px 60px;
     display: flex;
     flex-direction: column;
 }
@@ -740,7 +782,7 @@ display: inline-flex; align-items: center; gap: 12px; }
 .svc-label {
     display: block;
     color: var(--dark-green);
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 /* 4-column asymmetric grid — matches Teracle layout */
@@ -853,12 +895,12 @@ display: inline-flex; align-items: center; gap: 12px; }
     color: var(--lace);
     height: 100vh;
     overflow: hidden;
-    padding: 60px 0;
+    padding: 72px 0;
 }
 
 .proc-label {
     position: absolute;
-    top: 56px; left: 48px;
+    top: 8vh; left: 48px;
     color: var(--lace);
 }
 
@@ -875,7 +917,7 @@ display: inline-flex; align-items: center; gap: 12px; }
 
 .proc-title {
     position: absolute;
-    top: 7.5vh; left: 48px;
+    top: 10vh; left: 48px;
     font-family: var(--font-head);
     font-size: clamp(1.4rem, 3vw, 2.6rem);
     font-weight: 700;
@@ -1037,6 +1079,7 @@ display: inline-flex; align-items: center; gap: 12px; }
     animation: marqueeScroll 20s linear infinite;
     text-transform: uppercase;
     transition: color 0.2s ease;
+    padding: 0 48px;
 }
 
 .t-marquee-track:hover {
@@ -1048,7 +1091,18 @@ display: inline-flex; align-items: center; gap: 12px; }
     flex-direction: column;
 }
 
-.t-review { padding: 38px 0; }
+/* Hover — background fills black, score/word/body go white, square + name
+   stay green. Same easing feel as .hero-svc-list (no curtain, just a solid
+   fill): the bg eases in, and the text swaps colour mid-fill on hover-in,
+   snapping back instantly on hover-out. Horizontal padding + negative margin
+   let the black bleed past the text into the column's side padding. */
+.t-review {
+    padding: 38px 24px 0;
+    margin: 0 -24px;
+    background-color: transparent;
+    transition: background-color 0.4s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.t-review:hover { background-color: var(--black); }
 
 .t-meta-row {
     display: flex;
@@ -1065,10 +1119,16 @@ display: inline-flex; align-items: center; gap: 12px; }
     font-weight: 700;
     letter-spacing: 0.1em;
     color: var(--black);
+    transition: color 0.12s ease 0s;
+}
+.t-review:hover .t-score-group {
+    color: var(--lace);
+    transition: color 0.15s ease 0.18s;
 }
 .t-sq {
     font-size: 1.25rem;
     color: var(--dark-green);
+    transition: color 0.2s ease;
 }
 .t-name {
     font-family: var(--font-head);
@@ -1076,7 +1136,13 @@ display: inline-flex; align-items: center; gap: 12px; }
     font-weight: 600;
     letter-spacing: 0.12em;
     color: var(--dark-green);
+    transition: color 0.2s ease;
 }
+/* Square + name stay green on hover (brighter --green so they read on black) */
+.t-review:hover .t-sq
+ { color: var(--dark-green); }
+
+.t-review:hover .t-name { color: var(--lace); }
 
 .t-body {
     font-family: var(--font-body);
@@ -1087,6 +1153,11 @@ display: inline-flex; align-items: center; gap: 12px; }
     opacity: 0;
     transform: translateY(40px);
     padding: 15px 0;
+    transition: color 0.12s ease 0s;
+}
+.t-review:hover .t-body {
+    color: var(--lace);
+    transition: color 0.15s ease 0.18s;
 }
 .t-body.revealed {
     opacity: 1;
