@@ -114,8 +114,8 @@ button { cursor: pointer; border: none; background: none; }
     inset: 0;
     z-index: 2000;
     background: rgba(10,10,10,0.5);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -128,14 +128,24 @@ button { cursor: pointer; border: none; background: none; }
 
 .overlay-close {
     position: absolute;
-    top: 28px; right: 36px;
-    font-size: 2rem;
+    top: 0; right: 32px;
+    height: 70px;
+    font-family: var(--font-head);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
     color: var(--lace);
+    display: flex;
+    align-items: center;
+    gap: 6px;
     opacity: 0.6;
     transition: opacity 0.2s;
-    font-family: var(--font-body);
 }
 .overlay-close:hover { opacity: 1; }
+.overlay-close-x {
+    display: inline-block;
+    font-size: 1.25rem;
+}
 
 .overlay-nav {
     display: flex;
@@ -152,27 +162,37 @@ button { cursor: pointer; border: none; background: none; }
     color: var(--lace);
     line-height: 1.1;
     opacity: 0.18;
-    transition: opacity 0.2s, color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 22px;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .overlay-link::before {
     content: attr(data-num);
-    font-size: 0.65rem;
+    font-size: 1.5rem;
     font-family: var(--font-body);
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 0.1em;
-    vertical-align: super;
-    margin-right: 14px;
-    opacity: 0.7;
+    color: var(--lace);
+    display: inline-block;
+    transform: rotate(-90deg);
+    transition: color 0.3s ease;
 }
-.overlay-link:hover { opacity: 1; color: var(--lace); }
+/* Links slide slightly left on hover; number turns dark green, text stays white */
+.overlay-link:hover {
+    opacity: 1;
+    transform: translateX(-24px);
+}
+.overlay-link:hover::before { color: var(--dark-green); }
 
 .overlay-footer-info {
     position: absolute;
     bottom: 48px; right: 60px;
     font-family: var(--font-body);
     font-size: 0.78rem;
+    font-weight: 600;
     color: var(--lace);
-    opacity: 0.45;
+    opacity: 0.7;
     display: flex;
     gap: 40px;
     letter-spacing: 0.08em;
@@ -184,8 +204,9 @@ button { cursor: pointer; border: none; background: none; }
     bottom: 48px; left: 60px;
     font-family: var(--font-body);
     font-size: 0.78rem;
+    font-weight: 600;
     color: var(--lace);
-    opacity: 0.45;
+    opacity: 0.7;
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
@@ -936,6 +957,12 @@ display: inline-flex; align-items: center; gap: 12px; }
     position: relative;
     margin-top: -200vh;
     z-index: 9;
+    /* Clip the x-axis only: the sticky .testimonials starts at translateX(100vw),
+       off the right edge, which would otherwise create page-wide horizontal
+       overflow (and shift the fixed nav when the menu opens). overflow-x: clip
+       clips it WITHOUT creating a scroll container, so the inner sticky still
+       pins to the viewport and overflow-y stays visible for the -200vh overlap. */
+    overflow-x: clip;
 }
 
 .testimonials {
@@ -1090,6 +1117,9 @@ display: inline-flex; align-items: center; gap: 12px; }
     position: relative;
     margin-top: -200vh;
     z-index: 10;
+    /* Same as .t-outer: clip the off-screen (translateX 100vw) sticky panel
+       on x only, so it can't create page-wide horizontal overflow. */
+    overflow-x: clip;
 }
 
 .cta-section {

@@ -12,9 +12,10 @@
     /* ============================================================
        LENIS — smooth scroll, synced to GSAP's ticker + ScrollTrigger
     ============================================================ */
+    let lenis = null;
     function initSmoothScroll() {
         if (typeof Lenis === 'undefined' || typeof gsap === 'undefined') return;
-        const lenis = new Lenis({
+        lenis = new Lenis({
             duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             smoothWheel: true,
@@ -37,8 +38,10 @@
     const overlayClose = document.getElementById('overlayClose');
     const overlayLinks = document.querySelectorAll('.overlay-link');
 
-    const openMenu  = () => { overlayMenu.classList.add('open');    document.body.style.overflow = 'hidden'; };
-    const closeMenu = () => { overlayMenu.classList.remove('open'); document.body.style.overflow = ''; };
+    // Lock scrolling via Lenis (not body{overflow:hidden}) so the native
+    // scrollbar stays visible and the fixed nav doesn't shift when the menu opens.
+    const openMenu  = () => { overlayMenu.classList.add('open');    if (lenis) lenis.stop();  };
+    const closeMenu = () => { overlayMenu.classList.remove('open'); if (lenis) lenis.start(); };
 
     if (menuBtn)      menuBtn.addEventListener('click', openMenu);
     if (overlayClose) overlayClose.addEventListener('click', closeMenu);
@@ -121,34 +124,45 @@
        UTILITY — split element text into per-line masked spans
     ────────────────────────────────────────────────────────── */
     function splitLines(el) {
+        // Capture the real laid-out width BEFORE clearing (works for both
+        // explicit-width and max-width/shrink-to-fit elements).
+        const maxW = el.clientWidth;
         const text = el.textContent.trim();
-        el.innerHTML = '';
         const words = text.split(/\s+/);
-        words.forEach(w => {
-            const s = document.createElement('span');
-            s.style.display = 'inline-block';
-            s.textContent = w + ' ';
-            el.appendChild(s);
-        });
-        const groups = [];
-        Array.from(el.children).forEach(s => {
-            const top = Math.round(s.getBoundingClientRect().top);
-            if (!groups.length || groups[groups.length - 1].top !== top) {
-                groups.push({ top, words: [] });
-            }
-            groups[groups.length - 1].words.push(s.textContent);
-        });
+
+        // Build lines by measuring the ACTUAL nowrap run incrementally with a
+        // hidden probe: add words until the next would exceed maxW, then break.
+        // Because the probe uses the same nowrap rendering as the final line,
+        // each built line is guaranteed to fit — no rounding mismatch between
+        // an inline-block measurement pass and a rebuilt nowrap line (which
+        // previously let long lines spill past an overflow:hidden edge).
         el.innerHTML = '';
-        return groups.map(g => {
+        const probe = document.createElement('span');
+        probe.style.cssText = 'visibility:hidden;white-space:nowrap;position:absolute;left:0;top:0;';
+        el.appendChild(probe);
+
+        const lines = [];
+        let cur = [];
+        words.forEach(w => {
+            const test = cur.concat(w);
+            probe.textContent = test.join(' ');
+            if (cur.length && probe.scrollWidth > maxW) {
+                lines.push(cur.join(' '));
+                cur = [w];
+            } else {
+                cur = test;
+            }
+        });
+        if (cur.length) lines.push(cur.join(' '));
+        el.removeChild(probe);
+
+        el.innerHTML = '';
+        return lines.map(lineText => {
             const mask = document.createElement('span');
             mask.style.cssText = 'display:block;overflow:hidden;';
             const inner = document.createElement('span');
-            // white-space: nowrap is required — without it, tiny width-measurement
-            // rounding differences between the temporary inline-block word spans
-            // and the final joined-text line can cause this line to silently
-            // re-wrap inside the overflow:hidden mask, clipping/cramming the text.
             inner.style.cssText = 'display:block;white-space:nowrap;';
-            inner.textContent = g.words.join('').trimEnd();
+            inner.textContent = lineText;
             mask.appendChild(inner);
             el.appendChild(mask);
             return inner;
